@@ -1,0 +1,711 @@
+# Task: Develop a polished mobile-friendly Tetris game using TypeScript + Canvas + PWA
+
+## Project Goal
+
+开发一个可以在 Android 手机上直接运行的单机俄罗斯方块游戏。
+
+最终目标：
+
+1. 用户无需安装 APK，通过浏览器访问即可游玩。
+2. 支持 Android 手机触控操作。
+3. 可以通过 "添加到主屏幕" 作为 PWA 独立运行。
+4. 游戏体验接近成熟商业俄罗斯方块游戏，而不是简单 demo。
+5. 代码结构清晰，方便后续扩展。
+
+
+---
+
+# Technology Stack (Mandatory)
+
+必须采用：
+
+- TypeScript
+- HTML5 Canvas
+- Vite
+- PWA
+
+
+禁止：
+
+- React
+- Vue
+- Unity
+- Flutter
+
+原因：
+
+俄罗斯方块属于实时 Canvas 游戏，不需要 DOM UI 框架。
+
+推荐工程：
+
+```
+tetris-game/
+
+├── src/
+│
+│── main.ts
+│
+├── game/
+│   ├── Game.ts
+│   ├── Board.ts
+│   ├── Piece.ts
+│   ├── Tetromino.ts
+│   ├── Collision.ts
+│   ├── Scoring.ts
+│   ├── Randomizer.ts
+│   └── GameState.ts
+│
+├── rendering/
+│   ├── Renderer.ts
+│   ├── CanvasRenderer.ts
+│   └── Theme.ts
+│
+├── input/
+│   ├── KeyboardInput.ts
+│   └── TouchInput.ts
+│
+├── audio/
+│   └── AudioManager.ts
+│
+├── ui/
+│   └── UIManager.ts
+│
+├── pwa/
+│   ├── manifest.json
+│   └── service-worker.ts
+│
+└── assets/
+```
+
+
+---
+
+# Core Gameplay Requirements
+
+实现完整俄罗斯方块玩法。
+
+
+## Board
+
+标准：
+
+```
+10 columns
+20 visible rows
++ hidden spawn rows
+```
+
+要求：
+
+- grid based
+- 每个 cell 独立管理
+- 支持颜色主题
+
+
+---
+
+# Tetromino System
+
+实现标准7种方块：
+
+```
+I
+O
+T
+S
+Z
+J
+L
+```
+
+
+要求：
+
+- 使用矩阵表示
+- 支持旋转
+- 支持碰撞检测
+
+
+旋转规则：
+
+优先采用：
+
+- Tetris Guideline 风格
+- SRS (Super Rotation System)
+
+如果复杂度过高：
+
+实现简化版旋转，但代码结构需要方便未来替换。
+
+
+---
+
+# Random Generator
+
+不要简单 random。
+
+
+实现：
+
+- 7-bag randomizer
+
+即：
+
+每个bag包含：
+
+```
+I O T S Z J L
+```
+
+随机打乱。
+
+
+优势：
+
+避免长期没有某种方块。
+
+
+---
+
+# Movement System
+
+必须支持：
+
+## 自动下降
+
+gravity system:
+
+```
+time ->
+piece moves down
+```
+
+
+## 玩家控制
+
+键盘：
+
+```
+Left
+Right
+Down
+Space = hard drop
+Up = rotate
+P = pause
+```
+
+
+手机：
+
+必须支持：
+
+- 左滑：左移
+- 右滑：右移
+- 下滑：soft drop
+- 点击：旋转
+- 长按下降
+
+
+同时提供虚拟按钮：
+
+```
++----------------+
+
+   GAME BOARD
+
+
+[←] [ROTATE] [→]
+
+       [↓]
+
+       [DROP]
+
++----------------+
+```
+
+
+---
+
+# Locking System
+
+实现：
+
+- piece landing
+- lock delay
+
+不要立即固定。
+
+参考现代游戏：
+
+```
+piece touches ground
+
+wait ~500ms
+
+if player moves
+reset timer
+
+otherwise lock
+```
+
+
+---
+
+# Line Clear
+
+实现：
+
+检测：
+
+- single
+- double
+- triple
+- tetris
+
+
+动画：
+
+至少：
+
+- 消行闪烁
+- 清除动画
+
+
+---
+
+# Scoring System
+
+采用现代规则：
+
+例如：
+
+```
+Single:
+100
+
+Double:
+300
+
+Triple:
+500
+
+Tetris:
+800
+```
+
+
+支持：
+
+- combo bonus
+- level system
+
+
+Level:
+
+```
+higher level
+=
+faster gravity
+```
+
+
+---
+
+# Game Modes
+
+至少实现：
+
+## Classic Mode
+
+无限模式：
+
+目标：
+
+最高分。
+
+
+## Sprint Mode (optional)
+
+40 lines challenge。
+
+
+如果时间有限：
+
+优先完成 Classic。
+
+
+---
+
+# UI Design Requirements
+
+UI 不要像工程 demo。
+
+目标：
+
+类似移动端小游戏。
+
+
+设计要求：
+
+## Main screen
+
+包含：
+
+```
+TETRIS
+
+[ START ]
+
+High Score
+
+Settings
+```
+
+
+## Game screen
+
+
+布局：
+
+```
++----------------+
+
+Score
+
+Next Piece
+
+
+   BOARD
+
+
+Hold
+
+
+controls
+
+
++----------------+
+```
+
+
+要求：
+
+- 手机竖屏优先
+- 自适应不同尺寸
+
+
+---
+
+# Visual Design
+
+要求：
+
+现代化风格。
+
+
+参考：
+
+- Tetris Effect
+- Google Play 手机游戏设计
+
+
+实现：
+
+- 圆角方块
+- 渐变颜色
+- 背景效果
+- 简单粒子效果
+
+
+不要：
+
+- 纯黑白方格 demo
+
+
+---
+
+# Animation
+
+必须使用：
+
+requestAnimationFrame
+
+
+实现：
+
+- smooth falling
+- line clear animation
+- game over animation
+
+
+保持：
+
+60 FPS
+
+
+---
+
+# Audio
+
+增加简单音效：
+
+包括：
+
+- move
+- rotate
+- drop
+- line clear
+- game over
+
+
+如果没有音频文件：
+
+使用 Web Audio API 生成简单 tone。
+
+
+---
+
+# Persistence
+
+使用：
+
+localStorage
+
+
+保存：
+
+- highest score
+- settings
+- selected theme
+
+
+---
+
+# PWA Requirements
+
+实现：
+
+manifest.json
+
+包含：
+
+- app name
+- icon
+- theme color
+
+
+Service Worker:
+
+支持：
+
+- offline cache
+- offline launch
+
+
+目标：
+
+Chrome Android:
+
+```
+打开网页
+
+↓
+
+Add to Home Screen
+
+↓
+
+像App一样启动
+```
+
+
+---
+
+# Code Quality Requirements
+
+必须：
+
+- TypeScript strict mode
+- 模块化
+- 清晰接口设计
+- 避免巨大文件
+
+
+每个模块职责：
+
+例如：
+
+Board:
+
+只负责：
+
+```
+grid data
+collision
+line clear
+```
+
+
+Game:
+
+负责：
+
+```
+state machine
+game loop
+```
+
+
+Renderer:
+
+负责：
+
+```
+drawing
+animation
+```
+
+
+Input:
+
+负责：
+
+```
+keyboard/touch event
+```
+
+
+---
+
+# Testing Requirements
+
+至少提供：
+
+## Unit tests
+
+测试：
+
+- rotation
+- collision
+- line clear
+- scoring
+
+
+## Manual test checklist
+
+
+Android:
+
+- Chrome打开
+- 横竖屏
+- 不同尺寸
+- 添加桌面
+- 离线启动
+
+
+---
+
+# Development Process
+
+不要一次生成全部代码。
+
+按照阶段推进。
+
+
+## Phase 1
+
+完成：
+
+- Vite项目
+- Canvas
+- board
+- tetromino
+- movement
+
+
+验收：
+
+可以玩基础俄罗斯方块。
+
+
+---
+
+## Phase 2
+
+加入：
+
+- scoring
+- level
+- next piece
+- hold
+- randomizer
+
+
+---
+
+## Phase 3
+
+加入：
+
+- touch control
+- mobile UI
+- responsive layout
+
+
+---
+
+## Phase 4
+
+加入：
+
+- animation
+- audio
+- visual polish
+
+
+---
+
+## Phase 5
+
+加入：
+
+- PWA
+- deployment
+
+
+---
+
+# Final Deliverables
+
+最终提交：
+
+1. 完整源码
+2. README.md
+
+README包含：
+
+- 如何开发
+- 如何运行
+- 如何部署
+- 如何安装PWA
+
+
+
+---
+
+# Important
+
+不要把它实现成简单教学demo。
+
+目标：
+
+"一个真正可以长期玩的手机俄罗斯方块小游戏"
+
+优先级：
+
+1. 游戏体验
+2. 手机操作体验
+3. 视觉质量
+4. 工程结构
+5. 扩展能力
+
