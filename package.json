@@ -12,7 +12,8 @@
     "format": "prettier --write src tests e2e scripts *.ts *.json *.html README.md",
     "icons": "node scripts/generate-icons.mjs",
     "build:html": "tsc --noEmit && vite build --config vite.standalone.config.ts",
-    "test:html": "npm run build:html && playwright test --config playwright.portable.config.ts"
+    "test:html": "npm run build:html && playwright test --config playwright.portable.config.ts",
+    "verify:deploy": "node scripts/verify-deploy.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

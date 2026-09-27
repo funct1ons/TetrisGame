@@ -2,6 +2,10 @@
 
 一个竖屏优先、支持离线安装的俄罗斯方块游戏。使用 **TypeScript strict + Canvas + Vite + PWA**，无 UI 框架、无服务器、无外部字体或音频请求。
 
+**在线试玩：<https://funct1ons.github.io/TetrisGame/>**（手机 Chrome 打开即可玩；等待右上角出现“离线就绪”后可安装到主屏幕并断网游玩）
+
+只想要一个文件发给别人？用 `portable/PRISM.html`，见下方［最简单的玩法］。
+
 ## 最简单的玩法：发送一个 HTML 文件
 
 已生成 **`portable/PRISM.html`**（约 40 KB）。只发送这一个文件即可，不要发送源码或 `dist/index.html`。
@@ -39,6 +43,7 @@ npm run preview   # http://localhost:4173
 npm test          # 19 项逻辑单元测试
 npx playwright install chromium
 npm run test:e2e  # 自动构建并启动预览，8 项 Chromium 浏览器测试
+npm run verify:deploy  # 对线上站点做冒烟测试（可传自定义 URL）
 npm run format   # 格式化源码
 ```
 
@@ -95,9 +100,18 @@ Manifest 由 `vite.config.ts` 生成至 `dist/manifest.webmanifest`（标准 Web
 
 ### GitHub Pages
 
-项目包含 `.github/workflows/deploy.yml`：推送至 `main` 后测试、构建并发布。仓库 Settings → Pages → Source 选择 **GitHub Actions**。也可手动运行 workflow。若默认分支不是 main，请修改触发分支。
+仓库已启用 GitHub Pages（Source: **GitHub Actions**），线上地址：<https://funct1ons.github.io/TetrisGame/>。
 
-当前交付提供可部署产物与配置，不包含已上线公网地址；实际发布需要你自己的托管账号/仓库。
+推送至 `main` 后会自动运行测试、构建并发布；单文件版作为 workflow artifact **PRISM-single-file** 上传。若默认分支不是 main，请修改 `.github/workflows/deploy.yml` 的触发分支。
+
+部署后可本地验证：
+
+```sh
+npm run verify:deploy                                  # 默认检查本项目 Pages
+node scripts/verify-deploy.mjs https://example.com/    # 检查任意地址
+```
+
+该脚本会用手机视口打开站点，确认 Service Worker 就绪、开始游玩得分，然后断网重载并再游玩一次。
 
 ## 工程结构
 
