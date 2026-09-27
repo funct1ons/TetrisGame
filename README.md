@@ -6,6 +6,18 @@
 
 只想要一个文件发给别人？用 `portable/PRISM.html`，见下方［最简单的玩法］。
 
+<p align="center">
+  <img src="docs/play-phone.png" alt="PRISM 手机对局界面：得分 4,327，等级 2，消除 15 行" width="340">
+</p>
+
+## 界面
+
+| 首页（手机）                                                                                                | 对局（桌面）                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| <img src="docs/menu-phone.png" alt="首页：TETRIS 标题、经典无尽 / 40 行冲刺模式选择、开始游戏" width="300"> | <img src="docs/play-desktop.png" alt="桌面版对局：左侧得分与暂存，右侧接下来三块、等级与消除行数" width="560"> |
+
+两张图都是机器人真实游玩的画面（`npm run screenshots`），不是手工摆拍。
+
 ## 最简单的玩法：发送一个 HTML 文件
 
 已生成 **`portable/PRISM.html`**（约 40 KB）。只发送这一个文件即可，不要发送源码或 `dist/index.html`。
@@ -44,6 +56,7 @@ npm test          # 19 项逻辑单元测试
 npx playwright install chromium
 npm run test:e2e  # 自动构建并启动预览，8 项 Chromium 浏览器测试
 npm run verify:deploy  # 对线上站点做冒烟测试（可传自定义 URL）
+npm run screenshots    # 机器人试玩一局，生成 README 截图到 docs/
 npm run format   # 格式化源码
 ```
 
@@ -127,8 +140,9 @@ src/
   style.css     桌面布局、主题、横屏与减少动态效果
   mobile.css    竖屏手机的棋盘优先布局与紧凑控件
 public/         本地图标
-scripts/        图标生成脚本
- tests/         Vitest 游戏逻辑测试
+scripts/       图标生成、截图机器人、部署验证脚本
+docs/          README 使用的截图
+tests/         Vitest 游戏逻辑测试
  e2e/           Playwright 生产浏览器测试
 ```
 
@@ -143,7 +157,7 @@ scripts/        图标生成脚本
 - 19 项单元测试：顺逆旋转、I 墙踢、T 地板踢、阻塞旋转、边界/堆叠碰撞、多行消除、计分、等级、7-bag、Hold 限制、锁定延迟及 15 次上限、暂停、出生阻塞、冲刺胜利、重开。
 - 8 项 Chromium 测试：390×844、393×727、412×915、320×568、844×390、1440×900 六种尺寸的布局；开始/落下/暂停/设置持久化；模拟触控滑动/按钮；**生产 Service Worker 断网重载并游玩**。
 - 布局回归断言：棋盘保持 1:2、竖屏占用屏高 >62%、控件不被裁切、页面不横向溢出、浮层内容不被裁剪、手机上“安装”按钮不遮挡右上角图标。
-- 截图输出到 `test-results/`（不提交）；`node scripts/shots.mjs` 可对单文件版输出多尺寸截图到 `shots/`。
+- 截图输出到 `test-results/`（不提交）。`npm run screenshots` 会驱动一个落子机器人真实游玩一局并生成 `docs/` 里的 README 截图：棋盘状态由 `getImageData` 采样 canvas 得到，方块序列从 `#next` 预览读出，落点用 Dellacherie 特征评分选择。该机器人的形状、旋转与碰撞模型独立重写自 `src/game`，实测 60 块中预测落点与实际结果零偏差，可作为渲染与规则的交叉验证。
 
 ### Android 真机手工验收清单（发布前执行）
 
