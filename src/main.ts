@@ -27,6 +27,15 @@ const dispatch = (action: Action) => {
     storage.record(game.scoring.score);
   }
 };
+// Portrait phones hand a permanent slice of the screen to the browser toolbar, and because the
+// game deliberately never scrolls the toolbar cannot auto-hide. Claim it back on the first tap
+// (fullscreen needs a user gesture). Android and desktop honour this; iOS Safari has no element
+// fullscreen, and its users get the home-screen route instead, so a failure here is silent.
+const enterFullscreen = () => {
+  if (document.fullscreenElement || !document.fullscreenEnabled) return;
+  if (!matchMedia('(pointer: coarse)').matches) return;
+  void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+};
 const ui = new UIManager(
   game,
   storage,
@@ -35,6 +44,7 @@ const ui = new UIManager(
     touch.reset();
     game.start();
     ui.update();
+    enterFullscreen();
   },
   dispatch,
 );

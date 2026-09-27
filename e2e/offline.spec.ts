@@ -1,4 +1,20 @@
 import { test, expect } from '@playwright/test';
+test('触摸设备点开始游戏后进入全屏', async ({ browser }) => {
+  // The toolbar would otherwise sit there forever: the game never scrolls, so the browser has
+  // nothing to react to. Fullscreen returns that space; a desktop pointer must never trigger it.
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
+  expect(await page.evaluate(() => document.fullscreenEnabled)).toBe(true);
+  await page.locator('#play').tap();
+  await expect.poll(() => page.evaluate(() => !!document.fullscreenElement)).toBe(true);
+  await context.close();
+});
 test('iPhone 提示加到主屏幕而不是显示安装按钮', async ({ browser }) => {
   // Safari never fires beforeinstallprompt, so the status tag has to carry the instruction and
   // the install button must stay hidden instead of sitting there doing nothing.
