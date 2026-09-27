@@ -29,6 +29,13 @@
     letter-spacing: 2px;
     gap: 5px;
   }
+  /* Kept, but squeezed to match the compact topbar; it costs the board nothing because the
+     topbar's height is fixed. */
+  .author {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    padding-left: 6px;
+  }
   .brand-mark {
     font-size: 23px;
   }

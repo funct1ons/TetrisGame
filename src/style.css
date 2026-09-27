@@ -109,6 +109,15 @@ button:active,
   color: var(--accent);
   margin-left: -10px;
 }
+/* Author credit tucked beside the wordmark: tiny, muted, and never inside the playfield. */
+.author {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #66738b;
+  padding-left: 10px;
+  margin-right: auto;
+}
 .top-actions {
   display: flex;
   gap: 10px;
