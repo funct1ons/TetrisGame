@@ -1,25 +1,28 @@
-/* Portrait playfield first: reserve only compact HUD and thumb controls.
+/* Portrait playfield first: the board owns the screen and the HUD floats inside it.
    Keep the board's 1:2 ratio; never stretch Canvas cells to fill empty space. */
 @media (max-width: 700px) and (orientation: portrait) {
   .shell {
     --safe-top: max(6px, env(safe-area-inset-top));
     --safe-bottom: max(6px, env(safe-area-inset-bottom));
+    --topbar: 32px;
+    /* 128px = topbar 32 + two 4px gaps + touch controls 88. Everything left over is board. */
     --board-size: min(
-      calc(100vw - 70px),
-      calc((100dvh - 196px - var(--safe-top) - var(--safe-bottom)) / 2)
+      calc(100vw - 16px),
+      calc((100dvh - 128px - var(--safe-top) - var(--safe-bottom)) / 2)
     );
     max-width: none;
     min-height: 100dvh;
     padding: var(--safe-top) 8px var(--safe-bottom);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    position: relative;
   }
   .topbar {
-    height: 32px;
+    height: var(--topbar);
     padding: 0;
     border: 0;
-    flex: 0 0 32px;
+    flex: 0 0 var(--topbar);
   }
   .brand {
     font-size: 16px;
@@ -36,9 +39,12 @@
     gap: 6px;
   }
   .icon-button {
-    width: 32px;
-    height: 32px;
+    width: var(--topbar);
+    height: var(--topbar);
     font-size: 17px;
+  }
+  #help-top {
+    display: inline-block;
   }
   .local-tag {
     font-size: 8px;
@@ -46,126 +52,150 @@
   }
   .intro,
   .desktop-tip,
+  .board-top,
   .board-bottom,
-  .desktop-keys {
+  .desktop-keys,
+  .quiet-button {
     display: none;
   }
+  /* The mode and clock move into the score card: the topbar's middle belongs to the status
+     tag, and a board-top row would cost the playfield a whole row of height. */
+  #timer-mini {
+    display: inline;
+  }
+  /* One column: the board. The rails leave the flow and float on the playfield's top corners,
+     so the playfield can use every pixel the empty rails used to occupy. */
   .play-layout {
-    grid-template-columns: var(--board-size) 48px;
-    grid-template-rows: 38px auto;
-    column-gap: 6px;
-    row-gap: 4px;
+    position: relative;
+    grid-template-columns: var(--board-size);
     margin: 0 auto;
-    align-items: start;
+  }
+  .left-rail,
+  .right-rail {
+    position: absolute;
+    top: 5px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Three of ten columns each, minus the inset on both sides, so the four centre columns
+       (where every piece spawns) stay clear. */
+    width: calc(var(--board-size) * 0.3 - 11px);
+    /* TouchInput listens on the canvas itself, so only real controls may take pointers. */
+    pointer-events: none;
   }
   .left-rail {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 76px;
-    gap: 6px;
-    height: 38px;
+    left: 5px;
+  }
+  .right-rail {
+    right: 5px;
+  }
+  /* The overlay owns the board on the title, pause and game-over screens. */
+  .play-layout:has(#overlay:not([hidden])) .left-rail,
+  .play-layout:has(#overlay:not([hidden])) .right-rail {
+    display: none;
+  }
+  /* The stack has climbed into the HUD band: fade the chips so the blocks stay readable. */
+  .play-layout.stack-high .left-rail,
+  .play-layout.stack-high .right-rail {
+    opacity: 0.22;
+    transition: opacity 0.18s;
   }
   .stat-card {
     border-radius: 8px;
+    padding: 5px 7px;
+    border-color: #ffffff12;
+    /* Slightly translucent: a piece moved under a chip is still faintly readable. */
+    background: #0a0f1dcc;
+    line-height: 1.15;
+  }
+  .eyebrow {
+    font-size: 7px;
+    letter-spacing: 0.4px;
+  }
+  /* Block, not inline: an inline label inherits the parent's 14px strut and wastes a line. */
+  .stat-card .eyebrow {
+    display: block;
   }
   .score-card {
-    padding: 3px 8px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .score-card > .eyebrow {
-    font-size: 8px;
-    letter-spacing: 0;
+    padding: 5px 7px;
   }
   .score-card strong {
-    font-size: 22px;
-    margin: 0;
+    font-size: 19px;
     letter-spacing: 0;
+    margin: 1px 0 0;
   }
   .best-label {
-    margin-left: auto;
     border: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    text-align: right;
-    gap: 1px;
+    margin-top: 1px;
+    justify-content: flex-start;
+    gap: 5px;
     font-size: 8px;
-  }
-  .best-label b {
-    font-size: 10px;
-  }
-  .hold-card {
-    padding: 3px 5px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-  }
-  .hold-card .eyebrow {
-    font-size: 0;
-    letter-spacing: 0;
-  }
-  .hold-card .eyebrow::after {
-    content: '暂存';
-    font-size: 9px;
     white-space: nowrap;
   }
-  .hold-card kbd,
-  .hold-card small {
+  .best-label b {
+    font-size: 8px;
+  }
+  /* "个人最佳 4,169 00:22" does not fit a three-column chip: shorten the label instead of
+     letting it wrap and grow the chip. */
+  .best-text {
+    font-size: 0;
+  }
+  .best-text::after {
+    content: '最佳';
+    font-size: 8px;
+  }
+  #timer-mini {
+    margin-left: auto;
+    color: #66738b;
+    font-variant-numeric: tabular-nums;
+  }
+  .hold-card {
     display: none;
   }
-  #hold {
-    height: 30px;
-    padding: 0;
+  /* The hold card leaves the playfield, so the touch bar button becomes the hold slot. Only
+     the score, next-piece and level chips float on the board, and none of them take pointers. */
+  .touch-controls .hold-glyph {
+    display: none;
   }
-  .hold-card .mini-piece {
+  .hold-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hold-slot .mini-piece {
     gap: 1px;
   }
-  .hold-card .mini-piece i {
+  .hold-slot .mini-piece i {
     width: 8px;
     height: 8px;
     border-radius: 2px;
   }
-  .hold-card .empty {
-    font-size: 20px;
+  .hold-slot .empty {
+    font-size: 19px;
+    line-height: 1;
   }
-  .board-column {
-    width: var(--board-size);
-    min-width: 0;
-  }
-  .board-top {
-    height: 16px;
-    font-size: 8px;
-    letter-spacing: 0.3px;
-    align-items: center;
-  }
-  .board-wrap {
-    width: 100%;
-    aspect-ratio: 1 / 2;
-    min-height: 0;
-    max-height: none;
-    border-radius: 7px;
-  }
-  .right-rail {
-    gap: 8px;
-    padding-top: 16px;
-    width: 48px;
+  .touch-controls button:disabled {
+    opacity: 0.4;
   }
   .next-card {
-    padding: 8px 2px 3px;
+    padding: 5px 7px 4px;
     margin: 0;
   }
   .next-card > .eyebrow {
     display: block;
-    text-align: center;
     font-size: 0;
     letter-spacing: 0;
   }
   .next-card > .eyebrow::after {
     content: '下一个';
-    font-size: 9px;
+    font-size: 7px;
+  }
+  /* Only the next piece is drawn here. The rest stay in the DOM: the screenshot bot reads the
+     whole queue from their `--piece-color`. */
+  #next .next-piece:nth-child(n + 2) {
+    display: none;
   }
   .mini-piece {
     gap: 2px;
@@ -177,41 +207,33 @@
   }
   .next-piece,
   .next-first {
-    height: 43px;
+    height: 28px;
   }
   .next-first .mini-piece i {
     width: 10px;
     height: 10px;
   }
   .progress-card {
-    padding: 8px 4px;
+    padding: 5px 7px;
   }
   .progress-card > div:first-child {
-    flex-direction: column;
-    gap: 4px;
-  }
-  .progress-card .eyebrow {
-    font-size: 7px;
-    letter-spacing: 0.4px;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 5px;
   }
   .progress-card strong {
-    font-size: 22px;
+    font-size: 16px;
+    line-height: 1;
   }
   .progress-track {
-    margin: 8px 0;
+    margin: 4px 0 3px;
   }
   .line-stat {
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
     font-size: 8px;
   }
   .line-stat b {
-    font-size: 13px;
-  }
-  .quiet-button {
     font-size: 9px;
-    padding: 8px 0;
   }
   .touch-controls {
     flex: 0 0 auto;
@@ -227,7 +249,7 @@
     border-radius: 9px;
   }
   .touch-controls .drop-control {
-    height: 40px;
+    height: 38px;
   }
   .drop-control span {
     font-size: 12px;
@@ -235,15 +257,12 @@
   .drop-control kbd {
     display: none;
   }
-  /* Footer holds only the install button on phones; it sits left of the two icon buttons.
+  /* Footer holds only the install button on phones; it sits left of the three icon buttons.
      The status tag yields that space so the two can never overlap. */
-  .shell {
-    position: relative;
-  }
   footer {
     position: absolute;
     top: 5px;
-    right: 82px;
+    right: 120px;
     margin: 0;
     height: 22px;
     align-items: center;
@@ -351,10 +370,50 @@
   }
   .score-card > .eyebrow::after {
     content: '得分';
-    font-size: 9px;
+    font-size: 7px;
   }
-  .score-card {
-    gap: 5px;
+  /* Corner chips only get ~52px here: tighter inset, padding and type keep them readable
+     without reaching into the four centre columns. */
+  .left-rail {
+    left: 3px;
+  }
+  .right-rail {
+    right: 3px;
+  }
+  .left-rail,
+  .right-rail {
+    width: calc(var(--board-size) * 0.3 - 7px);
+  }
+  .stat-card {
+    padding: 4px 5px;
+  }
+  .score-card strong {
+    font-size: 14px;
+  }
+  .best-label,
+  .best-label b,
+  .best-text::after {
+    font-size: 7px;
+  }
+  /* No room for both on a 320px screen; the best score is the one worth keeping. */
+  #timer-mini {
+    display: none;
+  }
+  .progress-card > div:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .progress-card strong {
+    font-size: 13px;
+  }
+  .line-stat {
+    font-size: 7px;
+  }
+  .mini-piece i,
+  .next-first .mini-piece i {
+    width: 7px;
+    height: 7px;
   }
   .overlay {
     padding: 12px;

@@ -34,8 +34,9 @@ for (const [width, height] of [
     expect(fits.overflow).toBeLessThanOrEqual(1);
     expect(fits.scrolled).toBeLessThanOrEqual(1);
     if (width <= 700 && height > width) {
-      // Compact HUD, large playfield, controls fully reachable without scrolling.
-      expect(board!.height / height).toBeGreaterThan(0.62);
+      // The board takes over the space the right rail used to occupy, so it owns most of the
+      // screen. Short phones give up proportionally more to the fixed topbar and controls.
+      expect(board!.height / height).toBeGreaterThanOrEqual(height >= 700 ? 0.8 : 0.73);
       expect(board!.y).toBeLessThan(110);
       const controls = (await page.locator('.touch-controls').boundingBox())!;
       expect(controls.y + controls.height).toBeLessThanOrEqual(height);
@@ -48,7 +49,7 @@ for (const [width, height] of [
         const install = document.querySelector<HTMLElement>('#install')!;
         install.hidden = false;
         const box = install.getBoundingClientRect();
-        const hits = ['#settings', '#pause']
+        const hits = ['#settings', '#pause', '#help-top']
           .map((selector) => document.querySelector(selector)!.getBoundingClientRect())
           .filter(
             (o) => box.x < o.right && box.right > o.x && box.y < o.bottom && box.bottom > o.y,
@@ -63,11 +64,46 @@ for (const [width, height] of [
     await page.screenshot({ path: `test-results/menu-${width}.png`, fullPage: true });
     await page.locator('#play').click();
     await expect(page.locator('#overlay')).toBeHidden();
+    if (width <= 700 && height > width) {
+      // The HUD floats inside the playfield: it must stay within the board, keep the four
+      // centre columns (where every piece spawns) clear, and never swallow board gestures.
+      const hud = await page.evaluate(() => {
+        const board = document.querySelector('#board')!.getBoundingClientRect();
+        const cell = board.width / 10;
+        const spawnLeft = board.x + cell * 3;
+        const spawnRight = board.x + cell * 7;
+        const rails = ['.left-rail', '.right-rail'].map((selector) =>
+          document.querySelector(selector)!.getBoundingClientRect(),
+        );
+        return {
+          inside: rails.every(
+            (rail) =>
+              rail.x >= board.x - 1 &&
+              rail.right <= board.right + 1 &&
+              rail.bottom <= board.bottom + 1,
+          ),
+          clearOfSpawn: rails.every(
+            (rail) => rail.right <= spawnLeft + 1 || rail.x >= spawnRight - 1,
+          ),
+          boardTakesPointer:
+            document.elementFromPoint(board.x + cell * 5, board.y + cell)?.id === 'board',
+          helpVisible: getComputedStyle(document.querySelector('#help-top')!).display !== 'none',
+        };
+      });
+      expect(hud).toEqual({
+        inside: true,
+        clearOfSpawn: true,
+        boardTakesPointer: true,
+        helpVisible: true,
+      });
+    }
     await page.keyboard.press('Space');
     await expect(page.locator('#score')).not.toHaveText('0');
     await page.screenshot({ path: `test-results/playing-${width}.png`, fullPage: true });
-    await page.locator('#hold').click();
-    await expect(page.locator('#hold')).toBeDisabled();
+    // Phones move the hold card into the touch bar, so the control under test differs.
+    const hold = width <= 700 && height > width ? '[data-action="hold"]' : '#hold';
+    await page.locator(hold).click();
+    await expect(page.locator(hold)).toBeDisabled();
     await page.locator('#pause').click();
     await expect(page.locator('#resume')).toBeVisible();
     await page.locator('#resume').click();

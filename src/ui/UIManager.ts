@@ -1,10 +1,12 @@
 import type { Game, Action } from '../game/Game';
+import { HIDDEN } from '../game/Board';
 import { SHAPES, type Kind } from '../game/Tetromino';
 import { COLORS } from '../rendering/CanvasRenderer';
 import type { Storage } from './Storage';
 export class UIManager {
   canvas: HTMLCanvasElement;
   private last = '';
+  private crowded = false;
   constructor(
     private game: Game,
     private storage: Storage,
@@ -14,14 +16,14 @@ export class UIManager {
     document.querySelector('#app')!.innerHTML = `
       <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
       <main class="shell">
-        <header class="topbar"><a class="brand" href="./" aria-label="PRISM 首页"><span class="brand-mark">▦</span> PRISM<span class="brand-dot">.</span></a><div class="top-actions"><span class="local-tag"><i></i> 单机 · 离线就绪</span><button class="icon-button" id="settings" aria-label="打开设置">⚙</button><button class="icon-button" id="pause" aria-label="暂停游戏">Ⅱ</button></div></header>
+        <header class="topbar"><a class="brand" href="./" aria-label="PRISM 首页"><span class="brand-mark">▦</span> PRISM<span class="brand-dot">.</span></a><div class="top-actions"><span class="local-tag"><i></i> 单机 · 离线就绪</span><button class="icon-button" id="help-top" aria-label="打开操作指南">?</button><button class="icon-button" id="settings" aria-label="打开设置">⚙</button><button class="icon-button" id="pause" aria-label="暂停游戏">Ⅱ</button></div></header>
         <section class="intro"><div><p class="eyebrow">FIND YOUR FLOW</p><h1>让每一块，<span>恰到好处。</span></h1></div><p class="intro-note">放下杂念，落下方块。<br>属于你的片刻心流。</p></section>
         <section class="play-layout">
-          <aside class="left-rail"><div class="stat-card score-card"><span class="eyebrow">SCORE / 得分</span><strong id="score">0</strong><span class="best-label">个人最佳 <b id="best">0</b></span></div><div class="stat-card hold-card"><div class="card-title"><span class="eyebrow">HOLD / 暂存</span><kbd>C</kbd></div><button id="hold" aria-label="暂存方块"><span id="hold-piece" class="piece-preview empty">＋</span></button><small id="hold-hint">留一块，给下一步</small></div><div class="desktop-tip"><span>✦</span><p>不急，找到你的节奏。<br>每一次消除，都是新的空间。</p></div></aside>
+          <aside class="left-rail"><div class="stat-card score-card"><span class="eyebrow">SCORE / 得分</span><strong id="score">0</strong><span class="best-label"><span class="best-text">个人最佳</span><b id="best">0</b><span id="timer-mini">00:00</span></span></div><div class="stat-card hold-card"><div class="card-title"><span class="eyebrow">HOLD / 暂存</span><kbd>C</kbd></div><button id="hold" aria-label="暂存方块"><span id="hold-piece" class="piece-preview empty">＋</span></button><small id="hold-hint">留一块，给下一步</small></div><div class="desktop-tip"><span>✦</span><p>不急，找到你的节奏。<br>每一次消除，都是新的空间。</p></div></aside>
           <div class="board-column"><div class="board-top"><span><i class="live-dot"></i> <span id="mode-label">CLASSIC</span></span><span id="timer">00:00</span></div><div class="board-wrap"><canvas id="board" aria-label="俄罗斯方块游戏棋盘，使用方向键或下方触控按钮操作"></canvas><div id="overlay" class="overlay"></div><div id="toast" class="toast" role="status"></div></div><div class="board-bottom"><span id="status-label">准备进入心流</span><span>10 × 20</span></div></div>
           <aside class="right-rail"><div class="stat-card next-card"><span class="eyebrow">NEXT / 接下来</span><div id="next"></div></div><div class="stat-card progress-card"><div><span class="eyebrow">LEVEL</span><strong id="level">01</strong></div><div class="progress-track"><i id="progress"></i></div><div class="line-stat"><span>消除行数</span><b id="lines">0</b></div></div><button class="quiet-button" id="help">操作指南 ↗</button></aside>
         </section>
-        <nav class="touch-controls" aria-label="游戏控制"><button data-action="hold" class="secondary-control" aria-label="暂存">⇄<small>暂存</small></button><button data-action="left" aria-label="左移">←</button><button data-action="rotate" class="rotate-control" aria-label="顺时针旋转">↻<small>旋转</small></button><button data-action="right" aria-label="右移">→</button><button data-action="down" aria-label="软降">↓</button><button data-action="drop" class="drop-control">⇓ <span>直接落下</span><kbd>SPACE</kbd></button></nav>
+        <nav class="touch-controls" aria-label="游戏控制"><button data-action="hold" class="secondary-control" id="hold-touch" aria-label="暂存"><span class="hold-glyph">⇄</span><span class="hold-slot" id="hold-touch-piece"></span><small>暂存</small></button><button data-action="left" aria-label="左移">←</button><button data-action="rotate" class="rotate-control" aria-label="顺时针旋转">↻<small>旋转</small></button><button data-action="right" aria-label="右移">→</button><button data-action="down" aria-label="软降">↓</button><button data-action="drop" class="drop-control">⇓ <span>直接落下</span><kbd>SPACE</kbd></button></nav>
         <footer><span>滑动移动 · 轻触旋转 · 长按下降</span><span class="desktop-keys">← → 移动 &nbsp; ↑ 旋转 &nbsp; SPACE 落下 &nbsp; P 暂停</span><button id="install" hidden>安装到主屏幕 ↗</button></footer>
       </main>
       <dialog id="settings-dialog"><form method="dialog"><div class="dialog-header"><h2>按你的节奏</h2><button class="icon-button" aria-label="关闭设置">✕</button></div><p class="muted">把这里调成你喜欢的样子。</p><label class="setting-row">游戏音效<input type="checkbox" id="sound-setting"></label><label class="setting-row">触觉反馈<input type="checkbox" id="haptics-setting"></label><label class="setting-row">减少动态效果<input type="checkbox" id="motion-setting"></label><label class="setting-row">色彩主题<select id="theme-setting"><option value="aurora">极光薄荷</option><option value="sunset">日落珊瑚</option></select></label><button class="primary-button dialog-done">完成</button></form></dialog>
@@ -31,10 +33,15 @@ export class UIManager {
       document.querySelector(id)!.addEventListener('click', fn);
     on('#pause', () => dispatch('pause'));
     on('#hold', () => dispatch('hold'));
-    for (const name of ['settings', 'help'])
-      on(`#${name}`, () => {
+    for (const [trigger, dialog] of [
+      ['#settings', '#settings-dialog'],
+      ['#help', '#help-dialog'],
+      // Phones lose the right rail, so the guide moves into the topbar.
+      ['#help-top', '#help-dialog'],
+    ] as const)
+      on(trigger, () => {
         if (game.state === 'playing' || game.state === 'clearing') dispatch('pause');
-        (document.querySelector(`#${name}-dialog`) as HTMLDialogElement).showModal();
+        (document.querySelector(dialog) as HTMLDialogElement).showModal();
       });
     document.querySelector('#overlay')!.addEventListener('click', (e) => {
       const button = (e.target as HTMLElement).closest('button');
@@ -102,10 +109,10 @@ export class UIManager {
     text('best', Math.max(this.storage.best, s.score).toLocaleString());
     text('level', String(s.level).padStart(2, '0'));
     text('lines', g.mode === 'sprint' ? `${s.lines} / 40` : String(s.lines));
-    text(
-      'timer',
-      `${String(Math.floor(g.elapsed / 60000)).padStart(2, '0')}:${String(Math.floor(g.elapsed / 1000) % 60).padStart(2, '0')}`,
-    );
+    const clock = `${String(Math.floor(g.elapsed / 60000)).padStart(2, '0')}:${String(Math.floor(g.elapsed / 1000) % 60).padStart(2, '0')}`;
+    text('timer', clock);
+    // Portrait phones drop the board-top row; the clock moves next to the personal best.
+    text('timer-mini', clock);
     text('mode-label', g.mode === 'classic' ? 'CLASSIC · 无尽' : 'SPRINT · 40 行');
     text(
       'status-label',
@@ -118,11 +125,26 @@ export class UIManager {
             : '准备进入心流',
     );
     document.getElementById('progress')!.style.width = `${(s.lines % 10) * 10}%`;
+    // On phones the HUD floats on the playfield. Fade it once the stack climbs into that band,
+    // so a late-game tower is never hidden behind the chips.
+    const stackTop =
+      g.state === 'playing'
+        ? g.board.grid.findIndex((row, y) => y >= HIDDEN && row.some(Boolean))
+        : -1;
+    const crowded = stackTop !== -1 && stackTop < HIDDEN + 6;
+    if (crowded !== this.crowded) {
+      this.crowded = crowded;
+      document.querySelector('.play-layout')!.classList.toggle('stack-high', crowded);
+    }
     const signature = [g.state, g.mode, g.held, g.holdUsed, g.queue.join(''), g.won].join('|');
     if (signature === this.last) return;
     this.last = signature;
-    document.getElementById('hold-piece')!.innerHTML = this.preview(g.held);
-    (document.getElementById('hold') as HTMLButtonElement).disabled = g.holdUsed;
+    const held = this.preview(g.held);
+    document.getElementById('hold-piece')!.innerHTML = held;
+    // On phones the hold card is off screen: the touch bar button doubles as the hold slot.
+    document.getElementById('hold-touch-piece')!.innerHTML = held;
+    for (const id of ['hold', 'hold-touch'])
+      (document.getElementById(id) as HTMLButtonElement).disabled = g.holdUsed;
     text('hold-hint', g.holdUsed ? '落下后可再次暂存' : '留一块，给下一步');
     document.getElementById('next')!.innerHTML =
       g.queue

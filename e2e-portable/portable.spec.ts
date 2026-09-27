@@ -41,8 +41,10 @@ for (const mobile of [false, true]) {
       await page.keyboard.press('Space');
     }
     await expect(page.locator('#score')).not.toHaveText('0');
-    await page.locator('#hold').click();
-    await expect(page.locator('#hold')).toBeDisabled();
+    // Portrait phones move the hold card into the touch bar, so the control under test differs.
+    const hold = mobile ? '[data-action="hold"]' : '#hold';
+    await page.locator(hold).click();
+    await expect(page.locator(hold)).toBeDisabled();
     await page.locator('#pause').click();
     await expect(page.locator('#resume')).toBeVisible();
     await page.locator('#resume').click();

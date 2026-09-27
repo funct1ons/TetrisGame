@@ -139,6 +139,14 @@ button:active,
 .icon-button:hover {
   background: #ffffff12;
 }
+/* Guide entry point for portrait phones, where the right rail is not on screen. */
+#help-top {
+  display: none;
+}
+/* Portrait phones fold the clock into the score card instead of a board-top row. */
+#timer-mini {
+  display: none;
+}
 .intro {
   display: flex;
   justify-content: space-between;
@@ -524,6 +532,10 @@ kbd {
   user-select: none;
 }
 .touch-controls button small {
+  display: none;
+}
+/* Phone-only: the hold button shows the held piece instead of the swap glyph. */
+.hold-slot {
   display: none;
 }
 .touch-controls .rotate-control {
