@@ -1,0 +1,374 @@
+/* Portrait playfield first: reserve only compact HUD and thumb controls.
+   Keep the board's 1:2 ratio; never stretch Canvas cells to fill empty space. */
+@media (max-width: 700px) and (orientation: portrait) {
+  .shell {
+    --safe-top: max(6px, env(safe-area-inset-top));
+    --safe-bottom: max(6px, env(safe-area-inset-bottom));
+    --board-size: min(
+      calc(100vw - 70px),
+      calc((100dvh - 196px - var(--safe-top) - var(--safe-bottom)) / 2)
+    );
+    max-width: none;
+    min-height: 100dvh;
+    padding: var(--safe-top) 8px var(--safe-bottom);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .topbar {
+    height: 32px;
+    padding: 0;
+    border: 0;
+    flex: 0 0 32px;
+  }
+  .brand {
+    font-size: 16px;
+    letter-spacing: 2px;
+    gap: 5px;
+  }
+  .brand-mark {
+    font-size: 23px;
+  }
+  .brand-dot {
+    margin-left: -5px;
+  }
+  .top-actions {
+    gap: 6px;
+  }
+  .icon-button {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+  .local-tag {
+    font-size: 8px;
+    margin-right: 2px;
+  }
+  .intro,
+  .desktop-tip,
+  .board-bottom,
+  .desktop-keys {
+    display: none;
+  }
+  .play-layout {
+    grid-template-columns: var(--board-size) 48px;
+    grid-template-rows: 38px auto;
+    column-gap: 6px;
+    row-gap: 4px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .left-rail {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 76px;
+    gap: 6px;
+    height: 38px;
+  }
+  .stat-card {
+    border-radius: 8px;
+  }
+  .score-card {
+    padding: 3px 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .score-card > .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+  .score-card strong {
+    font-size: 22px;
+    margin: 0;
+    letter-spacing: 0;
+  }
+  .best-label {
+    margin-left: auto;
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 1px;
+    font-size: 8px;
+  }
+  .best-label b {
+    font-size: 10px;
+  }
+  .hold-card {
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+  }
+  .hold-card .eyebrow {
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  .hold-card .eyebrow::after {
+    content: '暂存';
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  .hold-card kbd,
+  .hold-card small {
+    display: none;
+  }
+  #hold {
+    height: 30px;
+    padding: 0;
+  }
+  .hold-card .mini-piece {
+    gap: 1px;
+  }
+  .hold-card .mini-piece i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .hold-card .empty {
+    font-size: 20px;
+  }
+  .board-column {
+    width: var(--board-size);
+    min-width: 0;
+  }
+  .board-top {
+    height: 16px;
+    font-size: 8px;
+    letter-spacing: 0.3px;
+    align-items: center;
+  }
+  .board-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 2;
+    min-height: 0;
+    max-height: none;
+    border-radius: 7px;
+  }
+  .right-rail {
+    gap: 8px;
+    padding-top: 16px;
+    width: 48px;
+  }
+  .next-card {
+    padding: 8px 2px 3px;
+    margin: 0;
+  }
+  .next-card > .eyebrow {
+    display: block;
+    text-align: center;
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  .next-card > .eyebrow::after {
+    content: '下一个';
+    font-size: 9px;
+  }
+  .mini-piece {
+    gap: 2px;
+  }
+  .mini-piece i {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+  }
+  .next-piece,
+  .next-first {
+    height: 43px;
+  }
+  .next-first .mini-piece i {
+    width: 10px;
+    height: 10px;
+  }
+  .progress-card {
+    padding: 8px 4px;
+  }
+  .progress-card > div:first-child {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .progress-card .eyebrow {
+    font-size: 7px;
+    letter-spacing: 0.4px;
+  }
+  .progress-card strong {
+    font-size: 22px;
+  }
+  .progress-track {
+    margin: 8px 0;
+  }
+  .line-stat {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 8px;
+  }
+  .line-stat b {
+    font-size: 13px;
+  }
+  .quiet-button {
+    font-size: 9px;
+    padding: 8px 0;
+  }
+  .touch-controls {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 440px;
+    margin: auto auto 0;
+    gap: 6px;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .touch-controls button {
+    height: 44px;
+    font-size: 25px;
+    border-radius: 9px;
+  }
+  .touch-controls .drop-control {
+    height: 40px;
+  }
+  .drop-control span {
+    font-size: 12px;
+  }
+  .drop-control kbd {
+    display: none;
+  }
+  /* Footer holds only the install button on phones; it sits left of the two icon buttons.
+     The status tag yields that space so the two can never overlap. */
+  .shell {
+    position: relative;
+  }
+  footer {
+    position: absolute;
+    top: 5px;
+    right: 82px;
+    margin: 0;
+    height: 22px;
+    align-items: center;
+    z-index: 4;
+  }
+  footer > span {
+    display: none !important;
+  }
+  .shell:has(#install:not([hidden])) .local-tag {
+    visibility: hidden;
+  }
+  #install {
+    font-size: 9px;
+    background: #101525;
+    border-radius: 5px;
+    padding: 5px 6px;
+  }
+  .overlay {
+    padding: 16px;
+  }
+  .hero-symbol {
+    display: none;
+  }
+  .overlay > .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .overlay h2 {
+    font-size: 28px;
+    margin-top: 12px;
+  }
+  .overlay h2 span {
+    font-size: 13px;
+    letter-spacing: 6px;
+  }
+  .overlay p {
+    font-size: 10px;
+  }
+  .overlay > small {
+    font-size: 10px;
+    margin-top: 14px;
+  }
+  .mode-switch {
+    margin: 20px 0 12px;
+  }
+  .mode-switch button {
+    font-size: 11px;
+    min-height: 36px;
+  }
+  .primary-button {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .primary-button span {
+    margin-left: 12px;
+  }
+  .overlay .text-button {
+    font-size: 11px;
+  }
+  .toast {
+    font-size: 11px;
+  }
+}
+
+.gesture-hint {
+  display: none;
+}
+
+/* One-line touch reminder for first-time players; the title screen has room for it. */
+@media (max-width: 700px) and (orientation: portrait) and (min-height: 640px) {
+  .gesture-hint {
+    display: block;
+    margin: 18px 0 0;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+  }
+}
+
+/* Tall portrait phones leave room inside the overlay again, so the mark returns to
+   anchor the title screen instead of leaving a large empty band. */
+@media (max-width: 700px) and (orientation: portrait) and (min-height: 700px) {
+  .hero-symbol {
+    display: block;
+    transform: scale(0.85) rotate(-9deg);
+    margin-bottom: 26px;
+  }
+  .overlay h2 {
+    font-size: 32px;
+  }
+  .overlay .mode-switch {
+    margin: 26px 0 14px;
+  }
+  .overlay > small {
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .local-tag {
+    display: none;
+  }
+  .score-card > .eyebrow {
+    font-size: 0;
+  }
+  .score-card > .eyebrow::after {
+    content: '得分';
+    font-size: 9px;
+  }
+  .score-card {
+    gap: 5px;
+  }
+  .overlay {
+    padding: 12px;
+  }
+  .overlay h2 {
+    font-size: 24px;
+  }
+  .overlay > .eyebrow {
+    display: none;
+  }
+  .overlay p {
+    font-size: 9px;
+  }
+  .mode-switch button {
+    font-size: 10px;
+  }
+}

@@ -137,7 +137,7 @@ export class UIManager {
     overlay.hidden = g.state === 'playing' || g.state === 'clearing';
     overlay.classList.toggle('game-over', g.state === 'over');
     if (g.state === 'menu')
-      overlay.innerHTML = `<div class="hero-symbol"><i></i><i></i><i></i><i></i></div><span class="eyebrow">A LITTLE SPACE TO BREATHE</span><h2>TETRIS<span>方块心流</span></h2><p>一块，一行，一次全新的可能。</p><div class="mode-switch"><button data-mode="classic" class="${g.mode === 'classic' ? 'selected' : ''}">经典无尽</button><button data-mode="sprint" class="${g.mode === 'sprint' ? 'selected' : ''}">40 行冲刺</button></div><button id="play" class="primary-button">开始游戏 <span>↗</span></button><small>个人最佳 · ${this.storage.best.toLocaleString()}</small>`;
+      overlay.innerHTML = `<div class="hero-symbol"><i></i><i></i><i></i><i></i></div><span class="eyebrow">A LITTLE SPACE TO BREATHE</span><h2>TETRIS<span>方块心流</span></h2><p>一块，一行，一次全新的可能。</p><div class="mode-switch"><button data-mode="classic" class="${g.mode === 'classic' ? 'selected' : ''}">经典无尽</button><button data-mode="sprint" class="${g.mode === 'sprint' ? 'selected' : ''}">40 行冲刺</button></div><button id="play" class="primary-button">开始游戏 <span>↗</span></button><small>个人最佳 · ${this.storage.best.toLocaleString()}</small><p class="gesture-hint">左右滑动移动 · 轻触旋转 · 长按快速下降</p>`;
     if (g.state === 'paused')
       overlay.innerHTML =
         '<span class="pause-symbol">Ⅱ</span><span class="eyebrow">TAKE A BREATH</span><h2>片刻留白</h2><p>你的方块在这里等你。</p><button id="resume" class="primary-button">继续游戏 ↗</button><button id="home" class="text-button">结束本局，返回首页</button>';

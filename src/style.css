@@ -703,286 +703,6 @@ dialog::backdrop {
     margin-top: 15px;
   }
 }
-@media (max-width: 700px) {
-  .shell {
-    max-width: 500px;
-    padding: 12px 16px calc(10px + env(safe-area-inset-bottom));
-    padding-top: max(10px, env(safe-area-inset-top));
-  }
-  .topbar {
-    padding-bottom: 10px;
-  }
-  .brand {
-    font-size: 19px;
-    letter-spacing: 3px;
-  }
-  .brand-mark {
-    font-size: 27px;
-  }
-  .local-tag {
-    font-size: 8px;
-    margin-right: 2px;
-  }
-  .icon-button {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-  .top-actions {
-    gap: 6px;
-  }
-  .intro {
-    padding: 12px 0;
-  }
-  .intro h1 {
-    font-size: 16px;
-  }
-  .intro .eyebrow {
-    font-size: 7px;
-    margin-bottom: 5px;
-  }
-  .intro-note {
-    font-size: 8px;
-  }
-  .play-layout {
-    grid-template-columns: minmax(0, 1fr) 80px;
-    gap: 11px;
-    max-width: 365px;
-    margin: auto;
-  }
-  .left-rail {
-    grid-column: 1/-1;
-    display: grid;
-    grid-template-columns: 1fr 105px;
-    gap: 10px;
-  }
-  .score-card {
-    padding: 10px 13px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    row-gap: 3px;
-  }
-  .score-card > .eyebrow {
-    font-size: 8px;
-  }
-  .score-card strong {
-    font-size: 23px;
-    margin: 0;
-    grid-column: 1;
-    grid-row: 2;
-  }
-  .best-label {
-    border: 0;
-    padding: 0;
-    grid-column: 2;
-    grid-row: 1/3;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    text-align: right;
-    font-size: 8px;
-  }
-  .best-label b {
-    font-size: 12px;
-  }
-  .stat-card {
-    border-radius: 11px;
-  }
-  .hold-card {
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-  }
-  .hold-card .eyebrow {
-    font-size: 7px;
-    letter-spacing: 1px;
-  }
-  .hold-card kbd,
-  .hold-card small {
-    display: none;
-  }
-  #hold {
-    height: 30px;
-  }
-  .hold-card .mini-piece i {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-  }
-  .hold-card .mini-piece {
-    gap: 2px;
-  }
-  .hold-card .empty {
-    font-size: 20px;
-  }
-  .desktop-tip {
-    display: none;
-  }
-  .board-column {
-    grid-column: 1;
-  }
-  .board-wrap {
-    width: 100%;
-    max-height: calc(100dvh - 365px);
-    min-height: 280px;
-    aspect-ratio: 1/2;
-    margin: 0 auto;
-    max-width: 100%;
-  }
-  .board-column {
-    width: min(100%, calc((100dvh - 365px) / 2));
-    min-width: 140px;
-    justify-self: center;
-  }
-  .board-top {
-    height: 20px;
-    font-size: 7px;
-    letter-spacing: 0.6px;
-  }
-  .board-bottom {
-    font-size: 6px;
-    margin-top: 7px;
-  }
-  .right-rail {
-    gap: 10px;
-  }
-  .next-card {
-    margin-top: 20px;
-    padding: 12px 8px;
-  }
-  .next-card > .eyebrow {
-    font-size: 7px;
-    letter-spacing: 0.6px;
-    display: block;
-    text-align: center;
-  }
-  .next-piece {
-    height: 54px;
-  }
-  .next-first {
-    height: 61px;
-  }
-  .mini-piece i {
-    width: 13px;
-    height: 13px;
-    border-radius: 3px;
-  }
-  .mini-piece {
-    gap: 2px;
-  }
-  .progress-card {
-    padding: 12px 10px;
-  }
-  .progress-card .eyebrow {
-    font-size: 7px;
-    letter-spacing: 0.5px;
-  }
-  .progress-card strong {
-    font-size: 18px;
-  }
-  .progress-track {
-    margin: 12px 0;
-  }
-  .line-stat {
-    font-size: 8px;
-  }
-  .quiet-button {
-    font-size: 8px;
-    padding: 5px 0;
-  }
-  .touch-controls {
-    margin-top: 12px;
-    max-width: 365px;
-    gap: 7px;
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .touch-controls button {
-    height: 42px;
-  }
-  .touch-controls .drop-control {
-    height: 35px;
-  }
-  .drop-control kbd {
-    display: none;
-  }
-  footer {
-    font-size: 8px;
-    margin-top: 10px;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-  footer > span:first-child {
-    display: block;
-  }
-  .desktop-keys {
-    display: none;
-  }
-  .overlay {
-    padding: 15px 12px;
-  }
-  .overlay h2 {
-    font-size: 22px;
-  }
-  .overlay h2 span {
-    font-size: 11px;
-    letter-spacing: 5px;
-    margin: 7px 0;
-  }
-  .overlay .eyebrow {
-    font-size: 6px;
-    letter-spacing: 1px;
-  }
-  .overlay p {
-    font-size: 8px;
-    margin: 6px 0;
-  }
-  .hero-symbol {
-    transform: scale(0.75) rotate(-9deg);
-    margin-bottom: 10px;
-    height: 50px;
-  }
-  .mode-switch {
-    margin: 15px 0 10px;
-  }
-  .mode-switch button {
-    font-size: 9px;
-    padding: 8px 0;
-  }
-  .primary-button {
-    min-height: 39px;
-    font-size: 11px;
-  }
-  .overlay > small {
-    font-size: 8px;
-    margin-top: 12px;
-  }
-  .overlay .final-score {
-    font-size: 34px;
-  }
-  .overlay .text-button {
-    font-size: 9px;
-  }
-  .toast {
-    font-size: 10px;
-  }
-}
-@media (max-width: 360px) {
-  .shell {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  .intro-note {
-    display: none;
-  }
-  .play-layout {
-    gap: 8px;
-    grid-template-columns: minmax(0, 1fr) 70px;
-  }
-  .local-tag {
-    display: none;
-  }
-}
 @media (max-height: 600px) and (orientation: landscape) {
   .shell {
     max-width: 850px;
@@ -1053,18 +773,31 @@ dialog::backdrop {
   }
   .overlay h2 {
     font-size: 22px;
+    margin: 8px 0 0;
+  }
+  .overlay h2 span {
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin: 4px 0 0;
   }
   .overlay .eyebrow {
     font-size: 7px;
+    line-height: 1.4;
   }
   .overlay p {
     font-size: 9px;
+    line-height: 1.6;
+    margin: 6px 0 0;
   }
   .mode-switch {
-    margin: 10px 0;
+    margin: 8px 0;
+  }
+  .primary-button {
+    min-height: 40px;
   }
   .overlay > small {
-    margin-top: 10px;
+    margin-top: 8px;
+    line-height: 1.4;
   }
   .stat-card {
     padding: 13px;
@@ -1083,69 +816,5 @@ dialog::backdrop {
   100% {
     opacity: 1;
     backdrop-filter: blur(8px);
-  }
-}
-
-@media (max-width: 700px) and (max-height: 700px) {
-  .intro,
-  footer,
-  .hero-symbol {
-    display: none;
-  }
-  .play-layout {
-    margin-top: 8px;
-  }
-  .shell {
-    padding-top: 6px;
-    padding-bottom: 6px;
-  }
-  .topbar {
-    padding-bottom: 6px;
-  }
-  .left-rail {
-    height: 48px;
-  }
-  .score-card {
-    padding: 6px 10px;
-  }
-  .hold-card {
-    padding: 5px 10px;
-  }
-  .board-wrap {
-    min-height: 260px;
-  }
-  .board-column {
-    min-width: 130px;
-  }
-  .touch-controls {
-    margin-top: 7px;
-    gap: 5px;
-  }
-  .touch-controls button {
-    height: 38px;
-  }
-  .touch-controls .drop-control {
-    height: 32px;
-  }
-  .next-piece {
-    height: 46px;
-  }
-  .next-first {
-    height: 50px;
-  }
-  .right-rail {
-    gap: 7px;
-  }
-  .overlay h2 {
-    margin-top: 8px;
-  }
-  .overlay h2 span {
-    margin: 5px 0;
-  }
-  .overlay .mode-switch {
-    margin: 9px 0;
-  }
-  .overlay > small {
-    margin-top: 8px;
   }
 }

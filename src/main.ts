@@ -7,6 +7,7 @@ import { Storage } from './ui/Storage';
 import { AudioManager } from './audio/AudioManager';
 import { registerPWA } from './pwa/register';
 import './style.css';
+import './mobile.css';
 const game = new Game(),
   storage = new Storage(),
   audio = new AudioManager();
