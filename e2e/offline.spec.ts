@@ -1,4 +1,21 @@
 import { test, expect } from '@playwright/test';
+test('iPhone 提示加到主屏幕而不是显示安装按钮', async ({ browser }) => {
+  // Safari never fires beforeinstallprompt, so the status tag has to carry the instruction and
+  // the install button must stay hidden instead of sitting there doing nothing.
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+  });
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect(page.locator('.local-tag')).toContainText('加到主屏幕');
+  await expect(page.locator('#install')).toBeHidden();
+  await expect(page.locator('#play')).toBeVisible();
+  await context.close();
+});
 test('生产PWA缓存后离线重载并可游玩', async ({ page, context }) => {
   await page.goto('/');
   await page.evaluate(async () => {

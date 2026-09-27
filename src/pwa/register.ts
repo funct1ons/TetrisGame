@@ -12,7 +12,21 @@ export function registerPWA(): void {
     button.hidden = true;
     return;
   }
-  status.innerHTML = '<i></i> 单机 · 随时开玩';
+  // Safari never fires beforeinstallprompt, so an iPhone gets no install affordance at all: the
+  // button stays hidden and the status tag has to point at Share -> Add to Home Screen instead,
+  // which is where the README already tells users to look. iOS 16.4+ also reads the manifest;
+  // the meta tags in index.html cover the rest.
+  const ios =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const homeHint =
+    ios &&
+    !matchMedia('(display-mode: standalone)').matches &&
+    !(navigator as { standalone?: boolean }).standalone;
+  const tag = (text: string) => {
+    status.innerHTML = `<i></i> ${text}`;
+  };
+  tag(homeHint ? '分享 → 加到主屏幕' : '单机 · 随时开玩');
   let prompt: InstallPrompt | undefined;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -40,7 +54,7 @@ export function registerPWA(): void {
         .register(`${import.meta.env.BASE_URL}service-worker.js`)
         .then(async (registration) => {
           await navigator.serviceWorker.ready;
-          status.innerHTML = '<i></i> 单机 · 离线就绪';
+          tag(homeHint ? '分享 → 加到主屏幕' : '单机 · 离线就绪');
           const updateNotice = () => {
             status.textContent = '新版就绪 · 关闭全部页面后更新';
           };
